@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: consumer-dpl
+  namespace: microservices
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: transactions.consumer
+  template:
+    metadata:
+      labels:
+        app: transactions.consumer
+    spec:
+      containers:
+        - name: consumer-app
+          image: docker.io/danieljalopes/transactions.consumer:0.1
+          imagePullPolicy: Always
+          ports:
+           - containerPort: 8081
+             name: rest-interface
+          env:
+            - name: CONSUMER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-consumer-secret
+                  key: username
+            - name: CONSUMER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-consumer-secret
+                  key: password            
+          resources:
+            requests:
+              cpu: "300m"
+              memory: "256Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 80
+            periodSeconds: 20
+            timeoutSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            initialDelaySeconds: 100
+            periodSeconds: 20
+            timeoutSeconds: 10        
+
+

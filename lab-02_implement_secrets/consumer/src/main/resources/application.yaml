@@ -1,0 +1,8 @@
+spring:
+  data:
+    mongodb:
+      uri: mongodb://${CONSUMER_USER}:${CONSUMER_PASSWORD}@mongodb-svc.databases.svc.cluster.local:27017/transactions
+      database: transactions
+
+server:
+  port: 8081

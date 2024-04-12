@@ -1,0 +1,15 @@
+# to expose consumer to outside cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: consumer-np
+  namespace: microservices
+spec:
+  type: NodePort
+  selector:
+    # match the .spec.template.metadata.labels on de Deployment
+    app: transactions.consumer
+  ports:
+  - port: 28081  #port this service listens
+    targetPort: 8081 # the service redirects trafic to containerPort
+    name: client

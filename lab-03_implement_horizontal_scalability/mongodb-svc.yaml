@@ -1,0 +1,34 @@
+# to expose mongodb inside cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-svc
+  namespace: databases
+spec:
+  type: ClusterIP
+  selector:
+    # match .spec.template.metadata.labels on the StatefullSet 
+    app: mongodb
+  ports:
+  - port: 27017  #port this service listens
+    targetPort: 27017 # the service redirects trafic to containerPort
+    name: client
+---
+# to expose mongodb to outside K8s cluster
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-np
+  namespace: databases
+spec:
+  type: NodePort
+  selector:
+  # match .spec.template.metadata.labels on the StatefullSet 
+    app: mongodb
+  ports:
+    - port: 27117 #port this service listens
+      targetPort: 27017 #port in the target container
+      # Optional field
+      # By default and for convenience, the Kubernetes control plane
+      # will allocate a port from a range (default: 30000-32767)
+      nodePort: 30017

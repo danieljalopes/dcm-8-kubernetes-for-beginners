@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongodb-cm
+  namespace: databases
+data:
+  createUser.js: |
+    
+    print('---> START <---');
+
+    use transactions
+    var user = db.getUser(username);
+    if(user == null){
+      db.createUser(
+          {
+              user: "consumerUser",
+              pwd: "consumer123",
+              roles: [
+                  { role: "readWrite", db: "transactions" }
+              ]
+          }
+      );
+      print('User created');
+    }else{
+      print('User already exists');
+    }
+    print('---> END <---');

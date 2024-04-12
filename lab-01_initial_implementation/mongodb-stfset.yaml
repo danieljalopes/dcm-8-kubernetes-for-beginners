@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongodb
+  namespace: databases
+spec:
+   serviceName: "mongodb"
+   replicas: 1
+   selector:
+      matchLabels:
+         app: mongodb
+   template:
+      metadata:
+         labels:
+            app: mongodb
+      spec:
+          initContainers:
+            # this is needed because minikube creates folder with root user ownership
+            # and bitnami/mongodb needs folder with owner with uid 1001
+            - name: fix-permissions
+              image: busybox
+              command: ["sh", "-c", "chown -R 1001:1001 /bitnami/mongodb"]
+              securityContext:
+                privileged: true
+              volumeMounts:
+              - name: mongodb-pvc
+                mountPath: /bitnami/mongodb
+          containers:
+            - name: mongodb-app
+              image: bitnami/mongodb:7.0.7
+              imagePullPolicy: "IfNotPresent"
+              securityContext:
+                runAsUser: 1001
+              resources:
+                  requests: # minimum required
+                     cpu: 100m
+                     memory: "2Gi" 
+                  limits: # maximum allowed
+                     cpu: 100m
+                     memory: "2Gi"
+              env:
+                - name: MONGODB_AUTH_ENABLED
+                  value: "true"
+                # we can change the root user name if needed                
+                #- name: MONGODB_ROOT_USER
+                #  value: root
+                - name: MONGODB_ROOT_PASSWORD
+                  value: mongo123
+              ports:
+                  - containerPort: 27017
+                    name: client
+              volumeMounts:
+                  - name: mongodb-pvc
+                    mountPath: /bitnami/mongodb
+                  - name: setup-mongodb-config
+                    mountPath: /docker-entrypoint-initdb.d 
+          volumes:
+            - name: setup-mongodb-config
+              configMap:
+                name: mongodb-cm
+                defaultMode: 0777
+                items:
+                  - key: createUser.js
+                    path: createUser.js
+         
+   volumeClaimTemplates:
+      - metadata:
+          name: mongodb-pvc
+          namespace: databases
+        spec:
+          storageClassName: ""
+          volumeName: mongodb-pv
+          accessModes:
+           - ReadWriteOnce
+          resources:
+            requests:
+              storage: 200Mi 
+
+
+
+
+
+
