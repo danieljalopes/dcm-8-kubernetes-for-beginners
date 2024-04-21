@@ -1,6 +1,15 @@
-# Introduction
-This code is part of Kubernetes for Beginners: Microservices, Data Persistence, and Horizontal Scaling with Minikube. 
-Here you see several commands used to create this project.
+# Kubernetes for Beginners series - Part 7 - Hands On Project
+
+This repo is part of article  [Kubernetes for Beginners series - Part 7 - Hands On Project](https://danieljalopes.hashnode.dev/08-k8s-for-beginners-part7-hands-on-project). The article aims to teach how to use Kubnertes by creating a simple microservices based system.
+It is devided in 3 labs:
+- Lab 1 - Initial implementation: teaches the minimum to create all the services and make them comunicate with each other
+- Lab 2 - Applying Secrets: shows how to protect sensible data
+- Lab 3 - Achieve Horizontal Scalability: explains kinds of scalability available in K8s and how to implement Horizontal Scalability
+
+
+# Notes 
+This is a collection of all K8s commands I needed to use regularly to implement this tutorial
+
 
 ## K8s
 
